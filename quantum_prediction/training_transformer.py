@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 import logging
 import numpy as np
 import configparser
+from sklearn.utils import shuffle
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -34,12 +35,14 @@ es = EarlyStopping(monitor=MONITOR, patience=PATIENCE, mode='min', verbose=1, re
 # instantiate the model
 model = transformer_model()
 
-train_input = [np.array(data_dict["s1"]),
+i1, i2, i3, i4, labels = shuffle(np.array(data_dict["s1"]),
                np.array(data_dict["s2"]),
                np.array(data_dict["l1"]),
-               np.array(data_dict["l2"])]
+               np.array(data_dict["l2"]), categorical_labels)
 
-model.fit(train_input, categorical_labels,
+train_input = [i1, i2, i3, i4]
+
+model.fit(train_input, labels,
           batch_size=BATCH_SIZE,
           epochs=EPOCHS,
           validation_split=VALIDATION_SPLIT,
