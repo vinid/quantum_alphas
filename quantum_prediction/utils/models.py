@@ -20,14 +20,14 @@ def transformer_model():
     input3 = keras.layers.Input(shape=(1,))
     input4 = keras.layers.Input(shape=(1,))
 
-    m1 = keras.layers.Dense(8)(input1)
-    m2 = keras.layers.Dense(8)(input2)
-    m3 = keras.layers.Dense(8)(input3)
-    m4 = keras.layers.Dense(8)(input4)
+    m1 = keras.layers.Dense(4)(input1)
+    m2 = keras.layers.Dense(4)(input2)
+    m3 = keras.layers.Dense(4)(input3)
+    m4 = keras.layers.Dense(4)(input4)
 
     stacked = tf.keras.backend.stack((m1, m2, m3, m4), axis=1)
 
-    transformer_block = TransformerBlock(8, 4, 8)
+    transformer_block = TransformerBlock(4, 4, 4)
     #transformer_block_2 = TransformerBlock(8, 4, 8)
     #transformer_block_3 = TransformerBlock(8, 4, 8)
     x = transformer_block(stacked)

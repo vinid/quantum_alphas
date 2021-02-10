@@ -38,7 +38,7 @@ model = baseline_network()
 i1, i2, i3, i4, labels = shuffle(np.array(data_dict["s1"]),
                np.array(data_dict["s2"]),
                np.array(data_dict["l1"]),
-               np.array(data_dict["l2"], categorical_labels))
+               np.array(data_dict["l2"]), categorical_labels)
 
 train_input = np.column_stack([i1, i2, i3, i4])
 
