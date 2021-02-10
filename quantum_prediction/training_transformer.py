@@ -8,6 +8,7 @@ import numpy as np
 import configparser
 from sklearn.utils import shuffle
 
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 
