@@ -7,6 +7,7 @@ import logging
 import numpy as np
 import configparser
 from sklearn.utils import shuffle
+import pandas as pd
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -19,21 +20,22 @@ MONITOR = config['TRAINING']['monitor']
 VALIDATION_SPLIT = float(config['TRAINING']['validation_split'])
 EPOCHS = int(config['TRAINING']['epochs'])
 
-with open(TRAINING_DATA_PATH, "rb") as filino:
-    data_dict = pickle.load(filino)
 
-with open(TESTING_DATA_PATH, "rb") as filino:
-    testing_dict = pickle.load(filino)
+keras.backend.clear_session()
+
+data_dict = pd.read_csv(TRAINING_DATA_PATH, nrows = 12000000)
+
+testing_dict =  pd.read_csv(TESTING_DATA_PATH,nrows = 6000000)
 
 logging.info("Data was loaded")
 
 # we need to transform the continuous labels into one-hot-encoded
 label_encoder = LabelEncoder()
-integer_labels = label_encoder.fit_transform(data_dict["label"])
+integer_labels = label_encoder.fit_transform(data_dict["alphas"])
 categorical_labels = to_categorical(integer_labels)
 
 # testing labels
-testing_labels = label_encoder.transform(testing_dict["label"])
+testing_labels = label_encoder.transform(testing_dict["alphas"])
 categorical_testing_labels = to_categorical(testing_labels)
 
 # standard early stopping
@@ -42,32 +44,28 @@ es = EarlyStopping(monitor=MONITOR, patience=PATIENCE, mode='min', verbose=1, re
 # instantiate the model
 model = transformer_model()
 
-i1, i2, i3, i4, labels = shuffle(np.array(data_dict["s1"]),
-                                 np.array(data_dict["s2"]),
-                                 np.array(data_dict["l1"]),
-                                 np.array(data_dict["l2"]),
+i1, i2, i3, i4, labels = shuffle(data_dict[[ 'in_prob1', 'in_prob2', 'in_prob3', 'in_prob4']].values,
+                                 data_dict[ ['fin_prob1','fin_prob2', 'fin_prob3', 'fin_prob4']].values,
+                                 data_dict["L_in"].values,
+                                 data_dict["L_fin"].values,
                                  categorical_labels)
 
-#train_input = [i1, i2, i3, i4]
+train_input = [i1, i2, i3, i4]
 
-train_input = [i1, i2]
-
-del(i3)
-del(i4)
 
 model.fit(train_input, labels,
-          batch_size=714,
+          batch_size=200,
           epochs=EPOCHS,
           validation_split=VALIDATION_SPLIT,
           callbacks=[es],
           shuffle=True)
 
-#testing_input = [np.array(testing_dict["s1"]),
-#                         np.array(testing_dict["s2"]),
-#                         np.array(testing_dict["l1"]),
-#                         np.array(testing_dict["l2"])]
+testing_input = [data_dict[[ 'in_prob1', 'in_prob2', 'in_prob3', 'in_prob4']].values,
+                                 data_dict[ ['fin_prob1','fin_prob2', 'fin_prob3', 'fin_prob4']].values,
+                                 data_dict["L_in"].values,
+                                 data_dict["L_fin"].values,
+                                 categorical_labels]
 
-testing_input = [np.array(testing_dict["s1"]),
-                         np.array(testing_dict["s2"])]
+
 
 print(model.evaluate(testing_input, categorical_testing_labels))

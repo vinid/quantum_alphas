@@ -1,10 +1,12 @@
 import keras
-from quantum_prediction.utils.support_layers import *
+from utils.support_layers import *
+
+NUMCLASSES = 16
 
 def baseline_network():
     input1 = keras.layers.Input(shape=(10,))
     m1 = keras.layers.Dense(5, activation="relu")(input1)
-    output = keras.layers.Dense(12, activation="softmax")(m1)
+    output = keras.layers.Dense(7, activation="softmax")(m1)
     model = keras.Model(input1, output)
     model.compile(
         optimizer=keras.optimizers.RMSprop(),
@@ -25,8 +27,8 @@ def transformer_model():
     m3 = keras.layers.Dense(4)(input3)
     m4 = keras.layers.Dense(4)(input4)
 
-    stacked = tf.keras.backend.stack((m1, m2, m3, m4), axis=1)
-
+    #stacked = tf.keras.backend.stack((m1, m2, m3, m4), axis=1)
+    stacked = tf.keras.backend.stack((m1, m2), axis=1)
     transformer_block = TransformerBlock(4, 4, 4)
     #transformer_block_2 = TransformerBlock(8, 4, 8)
     #transformer_block_3 = TransformerBlock(8, 4, 8)
@@ -35,10 +37,11 @@ def transformer_model():
     #x = transformer_block_3(x)
     x = keras.layers.GlobalAveragePooling1D()(x)
     x = keras.layers.Dropout(0.1)(x)
-    output = keras.layers.Dense(12, activation="softmax")(x)
+    output = keras.layers.Dense(NUMCLASSES, activation="softmax")(x)
 
-    model = keras.Model([input1, input2, input3, input4], output)
-
+    #model = keras.Model([input1, input2, input3, input4], output)
+    model = keras.Model([input1, input2], output)
+    
     model.compile(
         optimizer=keras.optimizers.RMSprop(),
         loss='categorical_crossentropy',
