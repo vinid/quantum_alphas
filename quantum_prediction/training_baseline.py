@@ -93,7 +93,6 @@ for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     del model
     gc.collect()
 
-
 print("Experiment Ended. Average Accuracy: " + str(np.average(collect_accuracies)))
 print("Files:")
 print(TRAINING_DATA_PATH)
