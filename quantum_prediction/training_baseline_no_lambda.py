@@ -1,14 +1,13 @@
-
+from quantum_prediction.utils.utils import load_dataset
 from quantum_prediction.utils.models import *
 from keras.utils.np_utils import to_categorical
-from quantum_prediction.utils.utils import load_dataset
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import LabelEncoder
 import logging
+import gc
 import numpy as np
 import configparser
 from sklearn.utils import shuffle
-import gc
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -52,54 +51,51 @@ categorical_testing_labels = to_categorical(testing_labels)
 # standard early stopping
 es = EarlyStopping(monitor=MONITOR, patience=PATIENCE, mode='min', verbose=0, restore_best_weights=True)
 
-# let's prepare training data
+
 train_i1, train_i2, train_i3, train_i4, train_labels = shuffle(np.array(training_dict["s1"]),
-                                 np.array(training_dict["s2"]),
-                                 np.array(training_dict["l1"]),
-                                 np.array(training_dict["l2"]),
-                                 categorical_labels)
+               np.array(training_dict["s2"]),
+               np.array(training_dict["l1"]),
+               np.array(training_dict["l2"]), categorical_labels)
 
-train_input = [train_i1, train_i2, train_i3, train_i4]
+train_input = np.column_stack([train_i1, train_i2])
 
-# let's prepare validation data
 valid_i1, valid_i2, valid_i3, valid_i4, valid_labels = shuffle(np.array(validation_dict["s1"]),
-                                 np.array(validation_dict["s2"]),
-                                 np.array(validation_dict["l1"]),
-                                 np.array(validation_dict["l2"]),
-                                 categorical_validation_labels)
+               np.array(validation_dict["s2"]),
+               np.array(validation_dict["l1"]),
+               np.array(validation_dict["l2"]), categorical_validation_labels)
 
-validation_input = [valid_i1, valid_i2, valid_i3, valid_i4]
+valid_input = np.column_stack([valid_i1, valid_i2])
 
-# let's prepare test data
-testing_input = [np.array(testing_dict["s1"]),
-                 np.array(testing_dict["s2"]),
-                 np.array(testing_dict["l1"]),
-                 np.array(testing_dict["l2"])]
+test_i1, test_i2, test_i3, test_i4, test_labels = shuffle(np.array(testing_dict["s1"]),
+               np.array(testing_dict["s2"]),
+               np.array(testing_dict["l1"]),
+               np.array(testing_dict["l2"]), categorical_testing_labels)
+
+testing_input = np.column_stack([test_i1, test_i2])
 
 collect_accuracies = []
 for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     print("We are training model " + str(i) + " of " + str(NUM_OF_EXPERIMENTAL_RUNS))
 
     # instantiate the model
-    model = transformer_model(NUM_CLASSES)
+    model = baseline_network_no_lambda(NUM_CLASSES)
 
     model.fit(train_input, train_labels,
               batch_size=BATCH_SIZE,
               epochs=EPOCHS,
-              validation_data=(validation_input, valid_labels),
+              validation_data=(valid_input, valid_labels),
               callbacks=[es],
               verbose=0,
               shuffle=True)
 
     predictions = model.evaluate(testing_input, categorical_testing_labels, verbose=0)
     collect_accuracies.append(predictions[1])
-    print(predictions)
     del model
     gc.collect()
+
 
 print("Experiment Ended. Average Accuracy: " + str(np.average(collect_accuracies)))
 print("Files:")
 print(TRAINING_DATA_PATH)
 print(VALIDATION_DATA_PATH)
 print(TESTING_DATA_PATH)
-
