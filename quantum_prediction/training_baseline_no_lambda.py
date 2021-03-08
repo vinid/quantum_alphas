@@ -57,28 +57,28 @@ train_i1, train_i2, train_i3, train_i4, train_labels = shuffle(np.array(training
                np.array(training_dict["l1"]),
                np.array(training_dict["l2"]), categorical_labels)
 
-train_input = np.column_stack([train_i1, train_i2, train_i3, train_i4])
+train_input = np.column_stack([train_i1, train_i2])
 
 valid_i1, valid_i2, valid_i3, valid_i4, valid_labels = shuffle(np.array(validation_dict["s1"]),
                np.array(validation_dict["s2"]),
                np.array(validation_dict["l1"]),
                np.array(validation_dict["l2"]), categorical_validation_labels)
 
-valid_input = np.column_stack([valid_i1, valid_i2, valid_i3, valid_i4])
+valid_input = np.column_stack([valid_i1, valid_i2])
 
 test_i1, test_i2, test_i3, test_i4, test_labels = shuffle(np.array(testing_dict["s1"]),
                np.array(testing_dict["s2"]),
                np.array(testing_dict["l1"]),
                np.array(testing_dict["l2"]), categorical_testing_labels)
 
-testing_input = np.column_stack([test_i1, test_i2, test_i3, test_i4])
+testing_input = np.column_stack([test_i1, test_i2])
 
 collect_accuracies = []
 for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     print("We are training model " + str(i) + " of " + str(NUM_OF_EXPERIMENTAL_RUNS))
 
     # instantiate the model
-    model = baseline_network(NUM_CLASSES)
+    model = baseline_network_no_lambda(NUM_CLASSES)
 
     model.fit(train_input, train_labels,
               batch_size=BATCH_SIZE,
@@ -92,6 +92,7 @@ for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     collect_accuracies.append(predictions[1])
     del model
     gc.collect()
+
 
 print("Experiment Ended. Average Accuracy: " + str(np.average(collect_accuracies)))
 print("Files:")
