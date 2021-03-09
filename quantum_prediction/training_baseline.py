@@ -67,6 +67,7 @@ valid_i1, valid_i2, valid_i3, valid_i4, valid_labels = shuffle(validation_dict["
 
 valid_input = np.column_stack([valid_i1, valid_i2, valid_i3, valid_i4])
 del validation_dict
+
 test_i1, test_i2, test_i3, test_i4, test_labels = (testing_dict["s1"],
                testing_dict["s2"],
                testing_dict["l1"],
