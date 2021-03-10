@@ -100,7 +100,7 @@ for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     collect_f1_scores.append(f1_score(testing_labels, predicted_classes, average="macro"))
 
     logging.info("Current Accuracy: " + str(np.average(collect_accuracies)))
-    logging.info("Current Accuracy: " + str(np.average(collect_f1_scores)))
+    logging.info("Current F1 Score: " + str(np.average(collect_f1_scores)))
 
     del model
     gc.collect()
