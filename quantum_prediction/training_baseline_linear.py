@@ -36,6 +36,7 @@ validation_dict = load_dataset(VALIDATION_DATA_PATH)
 
 logging.info("Data was loaded")
 
+
 # we need to transform the continuous labels into one-hot-encoded
 label_encoder = LabelEncoder()
 training_labels = label_encoder.fit_transform(training_dict["labels"])
