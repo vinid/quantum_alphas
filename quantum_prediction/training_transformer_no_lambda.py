@@ -82,7 +82,7 @@ for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     print("We are training model " + str(i) + " of " + str(NUM_OF_EXPERIMENTAL_RUNS))
 
     # instantiate the model
-    model = transformer_model(NUM_CLASSES)
+    model = transformer_model_no_lambda(NUM_CLASSES)
 
     model.fit(train_input, train_labels,
               batch_size=BATCH_SIZE,
