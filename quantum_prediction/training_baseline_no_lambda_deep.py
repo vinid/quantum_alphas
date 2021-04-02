@@ -19,7 +19,7 @@ NUM_OF_EXPERIMENTAL_RUNS = int(config['TRAINING']['num_of_experimental_runs'])
 TRAINING_DATA_PATH = config['DATA']['training_path']
 TESTING_DATA_PATH = config['DATA']['testing_path']
 VALIDATION_DATA_PATH = config['DATA']['validation_path']
-NOISE = int(config['DATA']['noise'])
+NOISE = int(config['TRAINING']['noise'])
 
 BATCH_SIZE = int(config['TRAINING']['batch_size'])
 PATIENCE = int(config['TRAINING']['patience'])
