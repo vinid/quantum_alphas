@@ -1,4 +1,4 @@
-from quantum_prediction.utils.utils import load_dataset
+from quantum_prediction.utils.utils import *
 from quantum_prediction.utils.models import *
 from keras.utils.np_utils import to_categorical
 from keras.callbacks import EarlyStopping
@@ -20,6 +20,8 @@ NUM_OF_EXPERIMENTAL_RUNS = int(config['TRAINING']['num_of_experimental_runs'])
 TRAINING_DATA_PATH = config['DATA']['training_path']
 TESTING_DATA_PATH = config['DATA']['testing_path']
 VALIDATION_DATA_PATH = config['DATA']['validation_path']
+
+NOISE = int(config['DATA']['noise'])
 
 BATCH_SIZE = int(config['TRAINING']['batch_size'])
 PATIENCE = int(config['TRAINING']['patience'])
@@ -54,24 +56,30 @@ categorical_testing_labels = to_categorical(testing_labels)
 es = EarlyStopping(monitor=MONITOR, patience=PATIENCE, mode='min', verbose=0, restore_best_weights=True)
 
 
-train_i1, train_i2, train_i3, train_i4, train_labels = shuffle(training_dict["s1"],
-               training_dict["s2"],
-               training_dict["l1"],
-               training_dict["l2"], categorical_labels)
+train_i1, train_i2, train_labels = shuffle(training_dict["s1"],
+               training_dict["s2"], categorical_labels)
+
+if NOISE:
+    train_i1 = noise_states_list(train_i1)
+    train_i2 = noise_states_list(train_i2)
 
 train_input = np.column_stack([train_i1, train_i2])
 
-valid_i1, valid_i2, valid_i3, valid_i4, valid_labels = shuffle(validation_dict["s1"],
-               validation_dict["s2"],
-               validation_dict["l1"],
-               validation_dict["l2"], categorical_validation_labels)
+valid_i1, valid_i2, valid_labels = shuffle(validation_dict["s1"],
+               validation_dict["s2"], categorical_validation_labels)
+
+if NOISE:
+    train_i1 = noise_states_list(valid_i1)
+    train_i2 = noise_states_list(valid_i2)
 
 valid_input = np.column_stack([valid_i1, valid_i2])
 
-test_i1, test_i2, test_i3, test_i4, test_labels = (testing_dict["s1"],
-               testing_dict["s2"],
-               testing_dict["l1"],
-               testing_dict["l2"], categorical_testing_labels)
+test_i1, test_i2, test_labels = (testing_dict["s1"],
+               testing_dict["s2"], categorical_testing_labels)
+
+if NOISE:
+    train_i1 = noise_states_list(test_i1)
+    train_i2 = noise_states_list(test_i2)
 
 testing_input = np.column_stack([test_i1, test_i2])
 
