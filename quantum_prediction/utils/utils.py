@@ -1,4 +1,6 @@
 import pickle
+from numpy.random import multivariate_normal
+from numpy import hstack,array
 
 def load_dataset(path):
     with open(path, "rb") as filino:
