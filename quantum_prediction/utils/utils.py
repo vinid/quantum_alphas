@@ -8,8 +8,8 @@ def load_dataset(path):
     return data_dict
 
 
-def noise_single_state(state1, loc=0, dev=0.2):
-    noised = state1 + np.random.normal(loc, dev, 4)
+def noise_single_state(state1, loc=0, dev=0.05):
+    noised = np.abs(state1 + np.random.normal(loc, dev, 4))
     norm1 = np.sum(noised)
     final = noised / norm1
     return final
@@ -24,7 +24,7 @@ def noise_states(state1, state2, cov):
     final = noised/np.hstack((norm1, norm2))
     return final[0:4], final[4:]
 
-def noise_states_list(s1, loc=0, dev=0.2):
+def noise_states_list(s1, loc=0, dev=0.05):
     return np.array([noise_single_state(s, loc, dev) for s in s1])
 
 
