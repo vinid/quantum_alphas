@@ -4,6 +4,7 @@ from keras.utils.np_utils import to_categorical
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import LabelEncoder
 import logging
+import pickle
 import gc
 from sklearn.metrics import *
 import numpy as np
@@ -55,7 +56,6 @@ categorical_testing_labels = to_categorical(testing_labels)
 # standard early stopping
 es = EarlyStopping(monitor=MONITOR, patience=PATIENCE, mode='min', verbose=0, restore_best_weights=True)
 
-
 train_i1, train_i2, train_labels = shuffle(training_dict["s1"],
                training_dict["s2"], categorical_labels)
 
@@ -69,8 +69,8 @@ valid_i1, valid_i2, valid_labels = shuffle(validation_dict["s1"],
                validation_dict["s2"], categorical_validation_labels)
 
 if NOISE:
-    train_i1 = noise_states_list(valid_i1)
-    train_i2 = noise_states_list(valid_i2)
+    valid_i1 = noise_states_list(valid_i1)
+    valid_i2 = noise_states_list(valid_i2)
 
 valid_input = np.column_stack([valid_i1, valid_i2])
 
@@ -78,8 +78,8 @@ test_i1, test_i2, test_labels = (testing_dict["s1"],
                testing_dict["s2"], categorical_testing_labels)
 
 if NOISE:
-    train_i1 = noise_states_list(test_i1)
-    train_i2 = noise_states_list(test_i2)
+    test_i1 = noise_states_list(test_i1)
+    test_i2 = noise_states_list(test_i2)
 
 testing_input = np.column_stack([test_i1, test_i2])
 
@@ -102,6 +102,10 @@ for i in range(0, NUM_OF_EXPERIMENTAL_RUNS):
     predictions = model.predict(testing_input, batch_size=BATCH_SIZE, verbose=1)
     predicted_classes = predictions.argmax(axis=-1)
     testing_labels = np.argmax(test_labels, axis=1)
+    cf_matrix = confusion_matrix(testing_labels, predicted_classes)
+
+    with open("cf_matrix_linear_baseline", "w") as filino:
+        pickle.dump(cf_matrix, filino)
 
     collect_accuracies.append(accuracy_score(testing_labels, predicted_classes))
     collect_f1_scores.append(f1_score(testing_labels, predicted_classes, average="macro"))
